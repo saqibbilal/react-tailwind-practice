@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 
 // Switch the project here
-import App from './projects/01-profile-card/App';
+import App from './projects/01-qr-card/App';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
