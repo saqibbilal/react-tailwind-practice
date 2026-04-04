@@ -7,6 +7,7 @@ export default {
         extend: {
             fontFamily: {
                 'outfit': ['Outfit', 'sans-serif'],
+                'figtree': ['Figtree', 'sans-serif'],
             },
         },
     },
