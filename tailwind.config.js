@@ -8,6 +8,7 @@ export default {
             fontFamily: {
                 'outfit': ['Outfit', 'sans-serif'],
                 'figtree': ['Figtree', 'sans-serif'],
+                'DM Sans': ['DM Sans', 'sans-serif'],
             },
         },
     },
