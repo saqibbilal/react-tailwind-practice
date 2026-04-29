@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 
 // Project Imports
+import FirstRender from './projects/react/02-useFirstRender/App';
+import Timeout from './projects/react/01-useTimeout-hook/App';
 import Counter from './projects/react/00-react-counter/App';
 import Playground from './projects/react/playground/App';
 import QRCard from './projects/tailwind/01-qr-card/App';
@@ -14,8 +16,10 @@ const ACTIVE_PROJECT_KEY = 'playground';
 
 // ACTIVE_PROJECT_KEY Options: 'counter', 'qr', 'blog', 'bento'
 const projectMap: Record<string, React.FC> = {
-    'counter': Counter,
+    'firstRender': FirstRender,
+    'timeout': Timeout,
     'playground': Playground,
+    'counter': Counter,
     'qr':      QRCard,
     'blog':    BlogPreview,
     'bento':   BentoGrid,
