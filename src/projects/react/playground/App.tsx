@@ -1,10 +1,29 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 export function useDebounce(callback: () => void, delay: number): void {
     useEffect(() => {
         const id = setTimeout(callback, delay);
         return () => clearTimeout(id);
     }, [callback, delay]); // Re-runs (and resets) if callback or delay change
+}
+
+export function useDebounceDecoupled(
+  callback: () => void,
+  delay: number | null,
+  trigger?: any // The '?' makes it optional
+) {
+  const savedCallback = useRef(callback);
+
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  useEffect(() => {
+    if (delay !== null) {
+      const id = setTimeout(() => savedCallback.current(), delay);
+      return () => clearTimeout(id);
+    }
+  }, [delay, trigger]); // If trigger is undefined, this only runs when delay changes.
 }
 
 export default function App() {
@@ -14,14 +33,14 @@ export default function App() {
     // This is the callback that will be "debounced"
     // Because this function is re-created every render,
     // it triggers the 'reset' inside useDebounce.
-    useDebounce(() => {
+    useDebounceDecoupled(() => { // can switch this function with useDebounce for coupled version
         if (searchTerm) {
             console.log("Searching for:", searchTerm);
             setResults([`Result for ${searchTerm} 1`, `Result for ${searchTerm} 2`]);
         } else {
             setResults([]);
         }
-    }, 1000);
+    }, 1000, searchTerm);
 
     return (
         <div className="bg-gray-900 text-white flex flex-col items-center justify-center h-screen">
