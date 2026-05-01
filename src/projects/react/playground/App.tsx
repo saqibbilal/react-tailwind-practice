@@ -1,68 +1,43 @@
 import { useEffect, useState, useRef } from 'react'
 
-export function useDebounce(callback: () => void, delay: number): void {
+export function useHover<T extends HTMLElement>() {
+    const [isHovered, setIsHovered] = useState(false);
+    // Initialize with null for better TS compatibility
+    const elementRef = useRef<T>(null);
+
     useEffect(() => {
-        const id = setTimeout(callback, delay);
-        return () => clearTimeout(id);
-    }, [callback, delay]); // Re-runs (and resets) if callback or delay change
-}
+        const node = elementRef.current;
+        if (!node) return;
 
-export function useDebounceDecoupled(
-  callback: () => void,
-  delay: number | null,
-  trigger?: any // The '?' makes it optional
-) {
-  const savedCallback = useRef(callback);
+        const handleIn = () => setIsHovered(true);
+        const handleOut = () => setIsHovered(false);
 
-  useEffect(() => {
-    savedCallback.current = callback;
-  }, [callback]);
+        node.addEventListener("mouseenter", handleIn);
+        node.addEventListener("mouseleave", handleOut);
 
-  useEffect(() => {
-    if (delay !== null) {
-      const id = setTimeout(() => savedCallback.current(), delay);
-      return () => clearTimeout(id);
-    }
-  }, [delay, trigger]); // If trigger is undefined, this only runs when delay changes.
+        // Clean up the "Subscription"
+        return () => {
+            node.removeEventListener("mouseenter", handleIn);
+            node.removeEventListener("mouseleave", handleOut);
+        }
+    }, []);
+
+    return [elementRef, isHovered] as const;
+    // Note: 'as const' helps TypeScript understand this is a fixed-size array
 }
 
 export default function App() {
-    const [searchTerm, setSearchTerm] = useState("");
-    const [results, setResults] = useState<string[]>([]);
-
-    // This is the callback that will be "debounced"
-    // Because this function is re-created every render,
-    // it triggers the 'reset' inside useDebounce.
-    useDebounceDecoupled(() => { // can switch this function with useDebounce for coupled version
-        if (searchTerm) {
-            console.log("Searching for:", searchTerm);
-            setResults([`Result for ${searchTerm} 1`, `Result for ${searchTerm} 2`]);
-        } else {
-            setResults([]);
-        }
-    }, 1000, searchTerm);
+    const [myRef, isHovered] = useHover<HTMLDivElement>();
 
     return (
         <div className="bg-gray-900 text-white flex flex-col items-center justify-center h-screen">
-            <div className="text-center">
-                <h1 className="text-4xl font-bold mb-4">Debouncing Search</h1>
-
-                <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Type to search..."
-                    className="text-gray-900 border-2 border-gray-300 bg-white h-10 px-5 rounded-lg text-sm focus:outline-none"
-                />
-
-                <div className="mt-10">
-                    <h2 className="text-xl text-gray-400">Search Results:</h2>
-                    <ul className="mt-4">
-                        {results.map((res, index) => (
-                            <li key={index} className="text-green-400">{res}</li>
-                        ))}
-                    </ul>
-                </div>
+            <div
+                ref={myRef}
+                className={`transition-colors duration-300 p-10 rounded-2xl cursor-pointer text-2xl font-bold ${
+                    isHovered ? 'bg-purple-600 scale-110' : 'bg-purple-400'
+                }`}
+            >
+                {isHovered ? "RE-RENDER! 🚀" : "Hover Me!"}
             </div>
         </div>
     )

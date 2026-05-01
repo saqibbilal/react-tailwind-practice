@@ -6,6 +6,7 @@ import './index.css';
 import FirstRender from './projects/react/02-useFirstRender/App';
 import Timeout from './projects/react/01-useTimeout-hook/App';
 import Counter from './projects/react/00-react-counter/App';
+import UseHover from './projects/react/06-useHover-hook/App';
 import Playground from './projects/react/playground/App';
 import QRCard from './projects/tailwind/01-qr-card/App';
 import BlogPreview from './projects/tailwind/02-blog-preview-card/App';
@@ -18,8 +19,9 @@ const ACTIVE_PROJECT_KEY = 'playground';
 const projectMap: Record<string, React.FC> = {
     'firstRender': FirstRender,
     'timeout': Timeout,
-    'playground': Playground,
     'counter': Counter,
+    'useHover': UseHover,
+    'playground': Playground,
     'qr':      QRCard,
     'blog':    BlogPreview,
     'bento':   BentoGrid,
