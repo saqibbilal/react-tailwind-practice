@@ -1,30 +1,35 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 
 export function useHover<T extends HTMLElement>() {
-    const [isHovered, setIsHovered] = useState(false);
-    // Initialize with null for better TS compatibility
-    const elementRef = useRef<T>(null);
+  const [isHovered, setIsHovered] = useState(false);
 
-    useEffect(() => {
-        const node = elementRef.current;
-        if (!node) return;
+  // We keep a manual reference to the node to clean up listeners
+  const elementRef = useRef<T | null>(null);
 
-        const handleIn = () => setIsHovered(true);
-        const handleOut = () => setIsHovered(false);
+  const callbackRef = useCallback((node: T | null) => {
+    // 1. Clean up listeners from the previous node if it existed
+    if (elementRef.current) {
+      elementRef.current.removeEventListener("mouseenter", handleIn);
+      elementRef.current.removeEventListener("mouseleave", handleOut);
+    }
 
-        node.addEventListener("mouseenter", handleIn);
-        node.addEventListener("mouseleave", handleOut);
+    // 2. Update the ref with the new node
+    elementRef.current = node;
 
-        // Clean up the "Subscription"
-        return () => {
-            node.removeEventListener("mouseenter", handleIn);
-            node.removeEventListener("mouseleave", handleOut);
-        }
-    }, []);
+    // 3. Attach listeners to the new node
+    if (elementRef.current) {
+      elementRef.current.addEventListener("mouseenter", handleIn);
+      elementRef.current.addEventListener("mouseleave", handleOut);
+    }
+  }, []);
 
-    return [elementRef, isHovered] as const;
-    // Note: 'as const' helps TypeScript understand this is a fixed-size array
+  // Define handlers outside the callback to keep it clean
+  const handleIn = () => setIsHovered(true);
+  const handleOut = () => setIsHovered(false);
+
+  return [callbackRef, isHovered] as const;
 }
+
 
 export default function App() {
     const [myRef, isHovered] = useHover<HTMLDivElement>();
