@@ -1,11 +1,9 @@
-import { useEffect, useState, useCallback, useRef } from 'react'
-
+import { useState, useCallback, useRef } from 'react'
 export function useHover<T extends HTMLElement>() {
   const [isHovered, setIsHovered] = useState(false);
 
   // We keep a manual reference to the node to clean up listeners
   const elementRef = useRef<T | null>(null);
-
   const callbackRef = useCallback((node: T | null) => {
     // 1. Clean up listeners from the previous node if it existed
     if (elementRef.current) {
@@ -26,7 +24,6 @@ export function useHover<T extends HTMLElement>() {
   // Define handlers outside the callback to keep it clean
   const handleIn = () => setIsHovered(true);
   const handleOut = () => setIsHovered(false);
-
   return [callbackRef, isHovered] as const;
 }
 

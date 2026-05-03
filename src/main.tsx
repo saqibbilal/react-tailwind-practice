@@ -7,6 +7,7 @@ import FirstRender from './projects/react/02-useFirstRender/App';
 import Timeout from './projects/react/01-useTimeout-hook/App';
 import Counter from './projects/react/00-react-counter/App';
 import UseHover from './projects/react/06-useHover-hook/App';
+import FeatureCard from './projects/react/FeatureCard/App';
 import Playground from './projects/react/playground/App';
 import QRCard from './projects/tailwind/01-qr-card/App';
 import BlogPreview from './projects/tailwind/02-blog-preview-card/App';
@@ -21,6 +22,7 @@ const projectMap: Record<string, React.FC> = {
     'timeout': Timeout,
     'counter': Counter,
     'useHover': UseHover,
+    'featureCard': FeatureCard,
     'playground': Playground,
     'qr':      QRCard,
     'blog':    BlogPreview,
