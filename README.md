@@ -70,6 +70,156 @@ const [isPending, startTransition] = useTransition()
 
 ---
 
+# 🧠 The Hooks Revision: TypeScript Edition
+
+---
+
+## 1. `useState<T>`
+
+**Purpose:** Switch visible state in the UI.
+
+**Syntax:**
+```ts
+const [state, setState] = useState<T>(initialValue);
+```
+
+**Example:** Toggling a "Low Stock" badge for a bakery item.
+
+```ts
+const [isLowStock, setIsLowStock] = useState<boolean>(false);
+
+// Usage
+const toggleStock = () => setIsLowStock((prev) => !prev);
+
+return (
+  <div className={isLowStock ? "bg-red-100" : "bg-green-100"}>
+    {isLowStock ? "Order Ingredients!" : "Stock OK"}
+  </div>
+);
+```
+
+---
+
+## 2. `useReducer<R>`
+
+**Purpose:** Master control panel for complex, multi-step state.
+
+**Syntax:**
+```ts
+const [state, dispatch] = useReducer(reducerFn, initialState);
+```
+
+**Example:** Handling a multi-status API request (Idle, Loading, Success).
+
+```ts
+type State = { status: 'idle' | 'loading' | 'success'; data: string[] };
+type Action = { type: 'START' } | { type: 'RESOLVE'; payload: string[] };
+
+const [state, dispatch] = useReducer((state: State, action: Action): State => {
+  switch (action.type) {
+    case 'START':
+      return { ...state, status: 'loading' };
+    case 'RESOLVE':
+      return { status: 'success', data: action.payload };
+    default:
+      return state;
+  }
+}, { status: 'idle', data: [] });
+
+// Usage
+dispatch({ type: 'RESOLVE', payload: ['Croissant', 'Bagel'] });
+```
+
+---
+
+## 3. `useEffect`
+
+**Purpose:** Synchronize with external systems (side effects).
+
+**Syntax:**
+```ts
+useEffect(() => {
+  // effect
+  return () => cleanup;
+}, [deps]);
+```
+
+**Example:** Setting up a "Live Chat" listener.
+
+```ts
+useEffect(() => {
+  const socket = connectToBakeryChat(); // External bridge
+
+  return () => {
+    socket.disconnect(); // Cleanup
+  };
+}, []); // Runs once on mount
+```
+
+---
+
+## 4. `useMemo<T>`
+
+**Purpose:** Cache expensive computations.
+
+**Syntax:**
+```ts
+const value = useMemo(() => computeValue(), [deps]);
+```
+
+**Example:** Calculating total from a large orders list.
+
+```ts
+const expensiveTotal = useMemo<number>(() => {
+  return orders.reduce((acc, order) => acc + order.total, 0);
+}, [orders]);
+```
+
+---
+
+## 5. `useCallback<T>`
+
+**Purpose:** Cache function identity.
+
+**Syntax:**
+```ts
+const fn = useCallback((args: T) => { ... }, [deps]);
+```
+
+**Example:** Stable delete handler for a memoized component.
+
+```ts
+const handleDelete = useCallback((id: number): void => {
+  console.log(`Deleting product ${id}`);
+  setProducts(prev => prev.filter(p => p.id !== id));
+}, []);
+```
+
+---
+
+## 6. `useRef<T>`
+
+**Purpose:** Persistent container (does not trigger re-renders).
+
+**Syntax:**
+```ts
+const ref = useRef<T>(initialValue);
+```
+
+**Example:** DOM access + storing timeout ID.
+
+```ts
+const inputRef = useRef<HTMLInputElement>(null);
+const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+const handleSearch = () => {
+  inputRef.current?.focus(); // DOM access
+  timerRef.current = setTimeout(() => {}, 1000); // Store value
+};
+```
+
+---
+
 ## 🧠 Mental Models (Think Like This)
 
 ### 1. 🧩 Does this affect rendering?
@@ -114,7 +264,3 @@ const [isPending, startTransition] = useTransition()
 
 ---
 
-🚀 This cheat sheet is designed to help you:
-- Answer **interview questions clearly**
-- Make **better architectural decisions**
-- Avoid **common React pitfalls**
