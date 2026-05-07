@@ -15,17 +15,17 @@ import BlogPreview from './projects/tailwind/02-blog-preview-card/App';
 import BentoGrid from './projects/tailwind/03-bento-grid/App';
 
 // Change the key below to toggle projects.
-const ACTIVE_PROJECT_KEY = 'wordle';
+const ACTIVE_PROJECT_KEY = 'playground';
 
 // ACTIVE_PROJECT_KEY Options: 'counter', 'qr', 'blog', 'bento'
 const projectMap: Record<string, React.FC> = {
+    'playground': Playground,
     'firstRender': FirstRender,
     'timeout': Timeout,
     'counter': Counter,
     'useHover': UseHover,
     'wordle': WordleGame,
     'featureCard': FeatureCard,
-    'playground': Playground,
     'qr':      QRCard,
     'blog':    BlogPreview,
     'bento':   BentoGrid,

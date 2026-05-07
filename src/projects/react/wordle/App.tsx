@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const SECRET_WORD = "SPEND";
 const MAX_GUESSES = 5;
 
 export default function WordleGame() {
-  const [guesses, setGuesses] = useState([]);
+  const [guesses, setGuesses] = useState<string[]>([]);
   const [currentGuess, setCurrentGuess] = useState("");
   const [gameStatus, setGameStatus] = useState("playing");
 
@@ -26,7 +26,7 @@ export default function WordleGame() {
     setCurrentGuess("");
   };
 
-  const getBgClass = (char, index) => {
+  const getBgClass = (char:string, index:number) => {
     if (!char) return 'bg-white';
     const upperChar = char.toUpperCase();
 
@@ -39,7 +39,7 @@ export default function WordleGame() {
     }
   };
 
-  const grid = [...guesses];
+  const grid:string[] = [...guesses];
   while (grid.length < MAX_GUESSES) {
     grid.push("");
   }
