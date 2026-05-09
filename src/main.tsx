@@ -9,14 +9,17 @@ import Counter from './projects/react/00-react-counter/App';
 import UseHover from './projects/react/06-useHover-hook/App';
 import FeatureCard from './projects/react/FeatureCard/App';
 import WordleGame from './projects/react/wordle/App';
+import TicTacToe from './projects/react/tic-tac-toe/App';
+import Wordle4Game from './projects/react/wordle4/App';
 import Wordle6Game from './projects/react/wordle6/App';
+import DashWidget from './projects/react/dashboard/App';
 import Playground from './projects/react/playground/App';
 import QRCard from './projects/tailwind/01-qr-card/App';
 import BlogPreview from './projects/tailwind/02-blog-preview-card/App';
 import BentoGrid from './projects/tailwind/03-bento-grid/App';
 
 // Change the key below to toggle projects.
-const ACTIVE_PROJECT_KEY = 'wordle6';
+const ACTIVE_PROJECT_KEY = 'ticTacToe';
 
 // ACTIVE_PROJECT_KEY Options: 'counter', 'qr', 'blog', 'bento'
 const projectMap: Record<string, React.FC> = {
@@ -25,8 +28,11 @@ const projectMap: Record<string, React.FC> = {
     'timeout': Timeout,
     'counter': Counter,
     'useHover': UseHover,
+    'ticTacToe': TicTacToe,
     'wordle': WordleGame,
+    'wordle4': Wordle4Game,
     'wordle6': Wordle6Game,
+    'dashWidget': DashWidget,
     'featureCard': FeatureCard,
     'qr':      QRCard,
     'blog':    BlogPreview,
