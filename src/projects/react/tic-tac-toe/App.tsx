@@ -16,24 +16,25 @@ function checkWinner(squares) {
 }
 
 export default function TicTacToe() {
-  // Our only "Source of Truth"
-  const [squares, setSquares] = useState(Array(9).fill(null));
-  const [xIsNext, setXIsNext] = useState(true);
+    // Our only "Source of Truth"
+    const [squares, setSquares] = useState(Array.from({length:9}).fill(null));
+    const [xIsNext, setXIsNext] = useState(true);
 
-  // Derive the winner every time the component renders
-  const winner = checkWinner(squares);
+    // Derive the winner every time the component renders
+    const winner = checkWinner(squares);
+    const isDraw = !winner && squares.every(square => square !== null);
 
-  // Logic for when a square is clicked
-  const handleClick = (i) => {
-    // Stop if there is a winner or square is already filled
-    if (winner || squares[i]) return;
+    // Logic for when a square is clicked
+    const handleClick = (i) => {
+        // Stop if there is a winner or square is already filled
+        if (winner || isDraw || squares[i]) return;
 
-    const nextSquares = [...squares];
-    nextSquares[i] = xIsNext ? 'X' : 'O';
+        const nextSquares = [...squares];
+        nextSquares[i] = xIsNext ? 'X' : 'O';
 
-    setSquares(nextSquares);
-    setXIsNext(!xIsNext);
-  };
+        setSquares(nextSquares);
+        setXIsNext(!xIsNext);
+    };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-slate-900 text-white font-sans">
@@ -41,7 +42,12 @@ export default function TicTacToe() {
 
       {/* Status Message */}
       <div className="mb-4 text-xl font-semibold">
-        {winner ? `Winner: ${winner} 🎉` : `Next Player: ${xIsNext ? 'X' : 'O'}`}
+          {winner
+              ? `Winner: ${winner} 🎉`
+              : isDraw
+                ? "It's a Draw!"
+                : `Next Player: ${xIsNext ? 'X' : 'O'}`
+            }
       </div>
 
       {/* 3x3 Grid */}
