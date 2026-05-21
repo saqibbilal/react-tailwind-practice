@@ -1,6 +1,8 @@
 import { useState } from "react";
 
-const cardValues:string[] = ["banana", "cat", "peach", "apple", "dog", "fish", "fox", "frog"];
+// const cardValues:string[] = ["banana", "cat", "peach", "apple", "dog", "fish", "fox", "frog"];
+
+const cardValues = ['🍎', '🍌', '🍇', '🍊', '🍒', '🍉', '🍍', '🥝'];
 
 const duplicatedCards: string[] = [...cardValues, ...cardValues];
 
@@ -51,10 +53,7 @@ export default function MemoryMatch() {
             const secondIndex = index;
 
             // Temporarily show both cards
-            const updatedSelectedCards = [
-                firstIndex,
-                secondIndex,
-            ];
+            const updatedSelectedCards = [firstIndex, secondIndex];
 
             setSelectedCards(updatedSelectedCards);
 
@@ -67,10 +66,7 @@ export default function MemoryMatch() {
                 ]);
 
                 // Clear temporary selection
-                setTimeout(() => {
-                    setSelectedCards([]);
-                }, 300);
-
+                setSelectedCards([]);
                 return;
             }
 
