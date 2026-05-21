@@ -6,6 +6,7 @@ const cardValues = ['🍎', '🍌', '🍇', '🍊', '🍒', '🍉', '🍍', '�
 
 const duplicatedCards: string[] = [...cardValues, ...cardValues];
 
+// Fisher–Yates algorithm for shuffling
 const shuffleCards = (cards: string[]): string[] => {
     const shuffled:string[] = [...cards];
 
@@ -92,7 +93,7 @@ export default function MemoryMatch() {
     return (
         <div className={`flex flex-col gap-4 items-center justify-center min-h-screen bg-gray-800 text-white`}>
             <h1>Memory Match</h1>
-            <button onClick={resetGame}>
+            <button className={`bg-slate-400 border-slate-500 p-2 rounded-md hover:bg-slate-500`} onClick={resetGame}>
                 Reset Game
             </button>
 
