@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {type ChangeEvent, type FormEvent, useState} from 'react';
 
 const SECRET_WORD = "SPEND";
 const MAX_GUESSES = 5;
@@ -6,23 +6,13 @@ const MAX_GUESSES = 5;
 export default function WordleGame() {
   const [guesses, setGuesses] = useState<string[]>([]);
   const [currentGuess, setCurrentGuess] = useState("");
-  const [gameStatus, setGameStatus] = useState("playing");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     const guessToSubmit = currentGuess.toUpperCase();
 
-    if (gameStatus !== "playing" || guessToSubmit.length !== 5) return;
-
     const newGuesses = [...guesses, guessToSubmit];
     setGuesses(newGuesses);
-
-    if (guessToSubmit === SECRET_WORD) {
-      setGameStatus("won");
-    } else if (newGuesses.length === MAX_GUESSES) {
-      setGameStatus("lost");
-    }
-
     setCurrentGuess("");
   };
 
@@ -39,10 +29,23 @@ export default function WordleGame() {
     }
   };
 
-  const grid:string[] = [...guesses];
-  while (grid.length < MAX_GUESSES) {
-    grid.push("");
-  }
+    const getGameStatus = (): "playing" | "won" | "lost" => {
+        if (guesses.includes(SECRET_WORD)) return "won";
+        if (guesses.length >= MAX_GUESSES) return "lost";
+        return "playing";
+    };
+
+    const gameStatus = getGameStatus();
+
+    const grid = Array.from(
+        {length: MAX_GUESSES},
+        (_, i) => guesses[i] || ""
+    );
+
+  // const grid:string[] = [...guesses];
+  // while (grid.length < MAX_GUESSES) {
+  //   grid.push("");
+  // }
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-6 font-sans p-4">
@@ -83,7 +86,7 @@ export default function WordleGame() {
             type="text"
             maxLength={5}
             value={currentGuess}
-            onChange={(e) => setCurrentGuess(e.target.value.toUpperCase())}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setCurrentGuess(e.target.value.toUpperCase())}
             placeholder="TYPE GUESS"
             autoFocus
             className="w-48 p-3 border-2 border-slate-300 rounded-md focus:outline-none focus:border-blue-500 text-center font-bold tracking-widest"
@@ -99,7 +102,8 @@ export default function WordleGame() {
       <button
           className="px-6 py-3 bg-slate-800 text-white font-bold rounded-md hover:bg-slate-700 transition-colors"
           onClick={() => {
-            window.location.reload();
+            setGuesses([]);
+            setCurrentGuess("");
           }}>
         RETRY
       </button>
