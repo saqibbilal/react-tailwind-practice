@@ -9,9 +9,17 @@ export default function Playground() {
 
     return (
         <div>
-            {notes.map((note, index) => (
-                <div key={index}>{note}</div>
-            ))}
+            <div>
+                <form onSubmit={(e) => {addNote(e)}}>
+                    <input type="text"/>
+                    <button type="submit">Add Note</button>
+                </form>
+            </div>
+            <div>
+                {notes.map((note, index) => (
+                    <div key={index}>{note}</div>
+                ))}
+            </div>
         </div>
     )
 }
