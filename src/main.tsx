@@ -12,6 +12,7 @@ import WordleGame from './projects/react/wordle/App';
 import TicTacToe from './projects/react/tic-tac-toe/App';
 import MemoryMatch from './projects/react/memory-match/App';
 import Notes from './projects/react/notes/App';
+import ExpenseTrackerDashboard from './projects/react/expense-tracker-dashboard/App';
 import Wordle4Game from './projects/react/wordle4/App';
 import Wordle6Game from './projects/react/wordle6/App';
 import DashWidget from './projects/react/dashboard/App';
@@ -21,7 +22,7 @@ import BlogPreview from './projects/tailwind/02-blog-preview-card/App';
 import BentoGrid from './projects/tailwind/03-bento-grid/App';
 
 // Change the key below to toggle projects.
-const ACTIVE_PROJECT_KEY = 'notes';
+const ACTIVE_PROJECT_KEY = 'ETD';
 
 // ACTIVE_PROJECT_KEY Options: 'counter', 'qr', 'blog', 'bento'
 const projectMap: Record<string, React.FC> = {
@@ -33,6 +34,7 @@ const projectMap: Record<string, React.FC> = {
     'ticTacToe': TicTacToe,
     'memoryMatch': MemoryMatch,
     'notes': Notes,
+    'ETD': ExpenseTrackerDashboard,
     'wordle': WordleGame,
     'wordle4': Wordle4Game,
     'wordle6': Wordle6Game,
