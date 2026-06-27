@@ -27,6 +27,7 @@ export default function ExpenseTrackerDashboard() {
     }
 
     const totalExpense = expenseList.reduce((acc, curr) => acc + curr.Amount, 0);
+    const highestExpense = Math.max(...expenseList.map(expense => expense.Amount));
 
     const cleanSlate = () => {
         setExpenseList([]);
@@ -86,7 +87,7 @@ export default function ExpenseTrackerDashboard() {
                     {expenseList.map((expenseEntry, index) => (
 
                         <li key={index} className={`flex flex-row gap-4 m-2 items-center justify-between w-full font-bold text-xl`}>
-                            <span>{expenseEntry.Description}: ${expenseEntry.Amount}</span>
+                            <span>{expenseEntry.Description}: ${expenseEntry.Amount} {expenseEntry.Amount === highestExpense && "(Higest Expenst)"}</span>
                             <span className={`text-green-400 hover:text-green-600`} onClick={()=>{editExpense(index)}}>Edit</span>
                             <span className={`text-red-400 hover:text-red-600`} onClick={()=>{deleteExpense(index)}}>Delete</span>
                         </li>
