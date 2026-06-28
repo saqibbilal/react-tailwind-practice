@@ -8,16 +8,16 @@ interface expenseProps {
 export default function ExpenseTrackerDashboard() {
     const [expenseList, setExpenseList] = useState<expenseProps[]>([{Description: "Basket of apples", Amount: 12.5}, {Description: "Bunch of Bananas", Amount: 1.5}]);
     const [currentExpense, setCurrentExpense] = useState<expenseProps>({Description: "", Amount: 0});
-    const isEditting = useRef<null|number>(null);
+    const [isEditing, setIsEditing] = useState<number|null>(null);
 
-    const addExpense = (e:HTMLFormElement) => {
+    const addExpense = (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if(!currentExpense.Description || !currentExpense.Amount) return;
-        if(isEditting.current !== null) {
+        if(isEditing !== null) {
             const tempExpenseList = [...expenseList];
-            tempExpenseList[isEditting.current] = currentExpense;
+            tempExpenseList[isEditing] = currentExpense;
             setExpenseList(tempExpenseList);
-            isEditting.current = null;
+            setIsEditing(null);
             setCurrentExpense({Description: "", Amount: 0});
             return;
         }
@@ -36,15 +36,15 @@ export default function ExpenseTrackerDashboard() {
     }
 
     const deleteExpense = (index:number) => {
-        const tempExpenseList = [...expenseList];
-        tempExpenseList.splice(index, 1);
-        setExpenseList(tempExpenseList);
+        setExpenseList(prev =>
+          prev.filter((_, i) => i !== index)
+        );
     }
 
     const editExpense = (index:number) => {
         const tempExpenseList = [...expenseList];
         setCurrentExpense(tempExpenseList[index]);
-        isEditting.current = index;
+        setIsEditing(index);
     }
 
     return (
