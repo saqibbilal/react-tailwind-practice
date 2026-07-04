@@ -1,10 +1,25 @@
-import { useState } from 'react';
-import type { expense } from './types/expense.ts'
+import { useState, useEffect } from 'react';
+import type { Expense } from './types/expense.ts';
+import { getExpenses } from "./services/expenseApi";
 
 export default function ExpenseTrackerDashboard() {
-    const [expenseList, setExpenseList] = useState<expense[]>([{description: "Basket of apples", amount: 12.5}, {description: "Bunch of Bananas", amount: 1.5}]);
-    const [currentExpense, setCurrentExpense] = useState<expense>({description: "", amount: 0});
+    const [expenseList, setExpenseList] = useState<Expense[]>([]);
+    const [currentExpense, setCurrentExpense] = useState({description: "", amount: 0,});
     const [isEditing, setIsEditing] = useState<number|null>(null);
+
+    useEffect(() => {
+        const loadExpenses = async () => {
+            try {
+                const data = await getExpenses();
+                console.log(data);
+                setExpenseList(data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        loadExpenses();
+    }, []);
 
     const addExpense = (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -22,8 +37,8 @@ export default function ExpenseTrackerDashboard() {
         setCurrentExpense({description: "", amount: 0});
     }
 
-    const totalExpense = expenseList.reduce((acc, curr) => acc + curr.amount, 0);
-    const highestExpense = Math.max(...expenseList.map(expense => expense.amount));
+    const totalExpense = expenseList.reduce((acc, curr) => acc + Number(curr.amount), 0);
+    const highestExpense = expenseList.length > 0 ? Math.max(...expenseList.map(expense => Number(expense.amount))) : 0;
 
     const cleanSlate = () => {
         setExpenseList([]);
