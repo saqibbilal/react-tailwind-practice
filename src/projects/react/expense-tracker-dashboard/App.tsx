@@ -1,37 +1,33 @@
-import { useState, useRef } from 'react';
-
-interface expenseProps {
-    Description: string;
-    Amount: number;
-}
+import { useState } from 'react';
+import type { expense } from './types/expense.ts'
 
 export default function ExpenseTrackerDashboard() {
-    const [expenseList, setExpenseList] = useState<expenseProps[]>([{Description: "Basket of apples", Amount: 12.5}, {Description: "Bunch of Bananas", Amount: 1.5}]);
-    const [currentExpense, setCurrentExpense] = useState<expenseProps>({Description: "", Amount: 0});
+    const [expenseList, setExpenseList] = useState<expense[]>([{description: "Basket of apples", amount: 12.5}, {description: "Bunch of Bananas", amount: 1.5}]);
+    const [currentExpense, setCurrentExpense] = useState<expense>({description: "", amount: 0});
     const [isEditing, setIsEditing] = useState<number|null>(null);
 
     const addExpense = (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if(!currentExpense.Description || !currentExpense.Amount) return;
+        if(!currentExpense.description || !currentExpense.amount) return;
         if(isEditing !== null) {
             const tempExpenseList = [...expenseList];
             tempExpenseList[isEditing] = currentExpense;
             setExpenseList(tempExpenseList);
             setIsEditing(null);
-            setCurrentExpense({Description: "", Amount: 0});
+            setCurrentExpense({description: "", amount: 0});
             return;
         }
         const tempExpenseList = [...expenseList, currentExpense];
         setExpenseList(tempExpenseList)
-        setCurrentExpense({Description: "", Amount: 0});
+        setCurrentExpense({description: "", amount: 0});
     }
 
-    const totalExpense = expenseList.reduce((acc, curr) => acc + curr.Amount, 0);
-    const highestExpense = Math.max(...expenseList.map(expense => expense.Amount));
+    const totalExpense = expenseList.reduce((acc, curr) => acc + curr.amount, 0);
+    const highestExpense = Math.max(...expenseList.map(expense => expense.amount));
 
     const cleanSlate = () => {
         setExpenseList([]);
-        setCurrentExpense({Description: "", Amount: 0});
+        setCurrentExpense({description: "", amount: 0});
         return;
     }
 
@@ -62,10 +58,10 @@ export default function ExpenseTrackerDashboard() {
                             <input
                                 className={`bg-white rounded-md m-4 text-gray-700 p-2 hover:border-gray-900`}
                                 type="text"
-                                value = {currentExpense.Description}
+                                value = {currentExpense.description}
                                 placeholder="Enter expense name"
                                 onChange={(e)=>{
-                                    setCurrentExpense({...currentExpense, Description: e.target.value});
+                                    setCurrentExpense({...currentExpense, description: e.target.value});
 
                                 }}
                             />
@@ -75,8 +71,8 @@ export default function ExpenseTrackerDashboard() {
                                 min="0"
                                 step="0.01"
                                 placeholder="Enter expense amount"
-                                value = {currentExpense.Amount}
-                                onChange = {(e)=>{setCurrentExpense({...currentExpense, Amount: e.target.valueAsNumber})}}
+                                value = {currentExpense.amount}
+                                onChange = {(e)=>{setCurrentExpense({...currentExpense, amount: e.target.valueAsNumber})}}
                             />
                             <button className={`bg-blue-500 rounded-md m-4 hover:border-gray-900 p-2`} type="submit">Add Expense</button>
                         </form>
@@ -87,7 +83,7 @@ export default function ExpenseTrackerDashboard() {
                     {expenseList.map((expenseEntry, index) => (
 
                         <li key={index} className={`flex flex-row gap-4 m-2 items-center justify-between w-full font-bold text-xl`}>
-                            <span>{expenseEntry.Description}: ${expenseEntry.Amount} {expenseEntry.Amount === highestExpense && "(Higest Expenst)"}</span>
+                            <span>{expenseEntry.description}: ${expenseEntry.amount} {expenseEntry.amount === highestExpense && "(Higest Expenst)"}</span>
                             <span className={`text-green-400 hover:text-green-600`} onClick={()=>{editExpense(index)}}>Edit</span>
                             <span className={`text-red-400 hover:text-red-600`} onClick={()=>{deleteExpense(index)}}>Delete</span>
                         </li>
