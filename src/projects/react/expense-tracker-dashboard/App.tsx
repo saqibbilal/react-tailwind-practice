@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
 import type { Expense } from './types/expense.ts';
-import { getExpenses } from "./services/expenseApi";
+import type { ExpenseForm } from './types/expenseForm.ts';
+import {getExpenses, createExpense, updateExpense, deleteExpenseById} from "./services/expenseApi";
 
 export default function ExpenseTrackerDashboard() {
     const [expenseList, setExpenseList] = useState<Expense[]>([]);
-    const [currentExpense, setCurrentExpense] = useState({description: "", amount: 0,});
-    const [isEditing, setIsEditing] = useState<number|null>(null);
+    const [currentExpense, setCurrentExpense] = useState<ExpenseForm>({description: "", amount: 0,});
+    const [editingId, setEditingId] = useState<number|null>(null);
 
     useEffect(() => {
         const loadExpenses = async () => {
             try {
                 const data = await getExpenses();
-                console.log(data);
                 setExpenseList(data);
             } catch (error) {
                 console.error(error);
@@ -21,20 +21,47 @@ export default function ExpenseTrackerDashboard() {
         loadExpenses();
     }, []);
 
-    const addExpense = (e:React.FormEvent<HTMLFormElement>) => {
+    const addExpense = async (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if(!currentExpense.description || !currentExpense.amount) return;
-        if(isEditing !== null) {
-            const tempExpenseList = [...expenseList];
-            tempExpenseList[isEditing] = currentExpense;
-            setExpenseList(tempExpenseList);
-            setIsEditing(null);
-            setCurrentExpense({description: "", amount: 0});
-            return;
+        if (currentExpense.description.trim() === "" || currentExpense.amount <= 0) {
+          return;
         }
-        const tempExpenseList = [...expenseList, currentExpense];
-        setExpenseList(tempExpenseList)
-        setCurrentExpense({description: "", amount: 0});
+
+        if (editingId !== null) {
+          try {
+            const updatedExpense = await updateExpense(
+              editingId,
+              currentExpense
+            );
+
+            setExpenseList(prev =>
+              prev.map(expense =>
+                expense.id === updatedExpense.id
+                  ? updatedExpense
+                  : expense
+              )
+            );
+
+            setEditingId(null);
+            setCurrentExpense({
+              description: "",
+              amount: 0,
+            });
+
+            return;
+          } catch (error) {
+            console.error(error);
+          }
+        }
+        try{
+        const createdExpense:Expense = await createExpense(currentExpense);
+        setExpenseList(prev => [...prev, createdExpense]);
+        setCurrentExpense({description: "", amount: 0,});
+
+        }
+        catch(error){
+            console.error(error);
+        }
     }
 
     const totalExpense = expenseList.reduce((acc, curr) => acc + Number(curr.amount), 0);
@@ -46,17 +73,26 @@ export default function ExpenseTrackerDashboard() {
         return;
     }
 
-    const deleteExpense = (index:number) => {
-        setExpenseList(prev =>
-          prev.filter((_, i) => i !== index)
-        );
-    }
+    const deleteExpense = async (id: number) => {
+      try {
+        await deleteExpenseById(id);
 
-    const editExpense = (index:number) => {
-        const tempExpenseList = [...expenseList];
-        setCurrentExpense(tempExpenseList[index]);
-        setIsEditing(index);
-    }
+        setExpenseList(prev =>
+          prev.filter(expense => expense.id !== id)
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const editExpense = (expense: Expense) => {
+      setCurrentExpense({
+        description: expense.description,
+        amount: Number(expense.amount),
+      });
+
+      setEditingId(expense.id);
+    };
 
     return (
         <div>
@@ -95,12 +131,12 @@ export default function ExpenseTrackerDashboard() {
                 </div>
 
                 <div>
-                    {expenseList.map((expenseEntry, index) => (
+                    {expenseList.map((expenseEntry) => (
 
-                        <li key={index} className={`flex flex-row gap-4 m-2 items-center justify-between w-full font-bold text-xl`}>
+                        <li key={expenseEntry.id} className={`flex flex-row gap-4 m-2 items-center justify-between w-full font-bold text-xl`}>
                             <span>{expenseEntry.description}: ${expenseEntry.amount} {expenseEntry.amount === highestExpense && "(Higest Expenst)"}</span>
-                            <span className={`text-green-400 hover:text-green-600`} onClick={()=>{editExpense(index)}}>Edit</span>
-                            <span className={`text-red-400 hover:text-red-600`} onClick={()=>{deleteExpense(index)}}>Delete</span>
+                            <span className={`text-green-400 hover:text-green-600`} onClick={()=>{editExpense(expenseEntry)}}>Edit</span>
+                            <span className={`text-red-400 hover:text-red-600`} onClick={()=>{deleteExpense(expenseEntry.id)}}>Delete</span>
                         </li>
 
                     ))}
