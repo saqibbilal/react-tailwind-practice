@@ -1,6 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+import {
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 
 // Project Imports
 import FirstRender from './projects/react/02-useFirstRender/App';
@@ -45,11 +49,15 @@ const projectMap: Record<string, React.FC> = {
     'bento':   BentoGrid,
 };
 
+const queryClient = new QueryClient();
+
 // Fallback to Counter if key is mismatched
 const SelectedProject = projectMap[ACTIVE_PROJECT_KEY] || Counter;
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <SelectedProject />
+        <QueryClientProvider client={queryClient}>
+            <SelectedProject />
+        </QueryClientProvider>
     </React.StrictMode>,
 );

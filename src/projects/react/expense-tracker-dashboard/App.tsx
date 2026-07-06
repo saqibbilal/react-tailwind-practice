@@ -1,25 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 import type { Expense } from './types/expense.ts';
 import type { ExpenseForm } from './types/expenseForm.ts';
 import {getExpenses, createExpense, updateExpense, deleteExpenseById} from "./services/expenseApi";
+import { useQuery, useQueryClient  } from "@tanstack/react-query";
+
 
 export default function ExpenseTrackerDashboard() {
-    const [expenseList, setExpenseList] = useState<Expense[]>([]);
+    const {data: expenseList = [], isLoading, isError, error,} = useQuery({queryKey: ["expenses"], queryFn: getExpenses,});
     const [currentExpense, setCurrentExpense] = useState<ExpenseForm>({description: "", amount: 0,});
     const [editingId, setEditingId] = useState<number|null>(null);
 
-    useEffect(() => {
-        const loadExpenses = async () => {
-            try {
-                const data = await getExpenses();
-                setExpenseList(data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        loadExpenses();
-    }, []);
+    const queryClient = useQueryClient();
 
     const addExpense = async (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -29,18 +20,10 @@ export default function ExpenseTrackerDashboard() {
 
         if (editingId !== null) {
           try {
-            const updatedExpense = await updateExpense(
-              editingId,
-              currentExpense
-            );
-
-            setExpenseList(prev =>
-              prev.map(expense =>
-                expense.id === updatedExpense.id
-                  ? updatedExpense
-                  : expense
-              )
-            );
+            await updateExpense(editingId, currentExpense);
+            await queryClient.invalidateQueries({
+              queryKey: ['expenses'],
+            });
 
             setEditingId(null);
             setCurrentExpense({
@@ -54,10 +37,11 @@ export default function ExpenseTrackerDashboard() {
           }
         }
         try{
-        const createdExpense:Expense = await createExpense(currentExpense);
-        setExpenseList(prev => [...prev, createdExpense]);
-        setCurrentExpense({description: "", amount: 0,});
-
+            await createExpense(currentExpense);
+            await queryClient.invalidateQueries({
+                queryKey: ['expenses'],
+            });
+            setCurrentExpense({description: "", amount: 0,});
         }
         catch(error){
             console.error(error);
@@ -68,7 +52,7 @@ export default function ExpenseTrackerDashboard() {
     const highestExpense = expenseList.length > 0 ? Math.max(...expenseList.map(expense => Number(expense.amount))) : 0;
 
     const cleanSlate = () => {
-        setExpenseList([]);
+        setExpenseList([]); // I need to make it dynamic, setExpenseList does not exist anymore due to tanstack query taking over
         setCurrentExpense({description: "", amount: 0});
         return;
     }
@@ -76,10 +60,9 @@ export default function ExpenseTrackerDashboard() {
     const deleteExpense = async (id: number) => {
       try {
         await deleteExpenseById(id);
-
-        setExpenseList(prev =>
-          prev.filter(expense => expense.id !== id)
-        );
+        await queryClient.invalidateQueries({
+          queryKey: ['expenses'],
+        });
       } catch (error) {
         console.error(error);
       }
@@ -134,7 +117,7 @@ export default function ExpenseTrackerDashboard() {
                     {expenseList.map((expenseEntry) => (
 
                         <li key={expenseEntry.id} className={`flex flex-row gap-4 m-2 items-center justify-between w-full font-bold text-xl`}>
-                            <span>{expenseEntry.description}: ${expenseEntry.amount} {expenseEntry.amount === highestExpense && "(Higest Expenst)"}</span>
+                            <span>{expenseEntry.description}: ${expenseEntry.amount} {Number(expenseEntry.amount) === highestExpense && "(Higest Expenst)"}</span>
                             <span className={`text-green-400 hover:text-green-600`} onClick={()=>{editExpense(expenseEntry)}}>Edit</span>
                             <span className={`text-red-400 hover:text-red-600`} onClick={()=>{deleteExpense(expenseEntry.id)}}>Delete</span>
                         </li>
