@@ -6,9 +6,35 @@ import { useQuery, useQueryClient  } from "@tanstack/react-query";
 
 
 export default function ExpenseTrackerDashboard() {
-    const {data: expenseList = [], isLoading, isError, error,} = useQuery({queryKey: ["expenses"], queryFn: getExpenses,});
     const [currentExpense, setCurrentExpense] = useState<ExpenseForm>({description: "", amount: 0,});
     const [editingId, setEditingId] = useState<number|null>(null);
+    const {data: expenseList = [], isLoading, isError, error,} = useQuery({queryKey: ["expenses"], queryFn: getExpenses,});
+
+    if (isLoading) {
+      return (
+        <div className="bg-gray-900 text-white flex items-center justify-center h-screen">
+          <h1 className="text-2xl font-bold">Loading expenses...</h1>
+        </div>
+      );
+    }
+
+    if (isError) {
+      return (
+        <div className="bg-gray-900 text-red-400 flex items-center justify-center h-screen">
+          <div>
+            <h1 className="text-2xl font-bold">
+              Failed to load expenses
+            </h1>
+
+            <p className="mt-4">
+              {error instanceof Error
+                ? error.message
+                : "Unknown error"}
+            </p>
+          </div>
+        </div>
+      );
+    }
 
     const queryClient = useQueryClient();
 
